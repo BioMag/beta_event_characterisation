@@ -7,7 +7,7 @@ Settings file
 Configuration parameters for beta event characterization.
 """
 # Task
-task = "restEO" #leftCKCevoked or restEO
+task = "leftCKCevoked" #leftCKCevoked or restEO
 
 # Session
 sessions = ["01", "02"]
@@ -20,7 +20,7 @@ sfreq = 200
 
 n_labels = 450 # left: 226, right: 224, both: 450
 lag = 8
-group_id = "group_model_1"
+group_id = "job_source_2" #group_model_1
 ch_type = 'source-ave'
 side = "both"
 

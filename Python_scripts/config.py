@@ -15,7 +15,7 @@ user = os.environ["USER"]
 
 # path to where the data exists
 #study_path = '/data/path/'
-study_path = '/projects/HMM-beta/HMM_beta_sara/test_data'
+study_path = '/projects/HMM-beta/data/'
 
 # Source spacing
 spacing = "ico4"
@@ -30,11 +30,11 @@ proc = 'tsss'
 ###############################################################################
 # Folders (TODO: decide on folder structure)
 
-# scimeg datapath
-data_path = os.path.join(study_path, "BIDS")
+# datapath
+data_path = os.path.join(study_path, "MEG_derivatives")
 
 # path for the processed data (in HMM-MAR)
-processed_dir = os.path.join(study_path, "processed/")
+processed_dir = os.path.join(study_path, "HMM_derivatives/")
 
 # Scaled MRÍ director
 MRI_dir = os.path.join(study_path, 'MRI/')
@@ -44,11 +44,12 @@ MRI_dir = os.path.join(study_path, 'MRI/')
 fname = FileNames()
 
 # Some directories<<<<<<<<<<<<<<<<<<<<<<<<<
+fname.add("study_path", study_path)
 fname.add("data_path", data_path)
 fname.add("processed_dir", processed_dir)
 
 fname.add("megbids_dir", "{data_path}/{subject}/ses-{ses}/meg")
-fname.add("hmm_bids_dir", "{processed_dir}/{subject}/ses-{ses}/")
+fname.add("hmm_dir", "{processed_dir}/{subject}/")
 
 
 # Sensor-level files
@@ -66,80 +67,63 @@ fname.add('trans',
 )
 
 
-
 # ica decompositions
 fname.add(
-    "ica", "{hmm_bids_dir}/ica/{subject}_ses-{ses}_task-{task}_lfreq-{lfreq}-hfreq-{hfreq}-ica.fif"
+    "ica", "{megbids_dir}/ica/{subject}_ses-{ses}_task-{task}_lfreq-{lfreq}-hfreq-{hfreq}-ica.fif"
 )
 # Annotations
 fname.add(
-    'annot', "{hmm_bids_dir}/annot/{subject}_ses-{ses}_task-{task}_lfreq-{lfreq}-hfreq-{hfreq}-annot.fif"
+    'annot', "{megbids_dir}/annot/{subject}_ses-{ses}_task-{task}_lfreq-{lfreq}-hfreq-{hfreq}-annot.fif"
 )
-
 # Source level files
 # Noise covariance
 fname.add(
-    "noise_cov", "{hmm_bids_dir}/noise_cov/{subject}_ses-{ses}_task-{task}_lfreq-{lfreq}-hfreq-{hfreq}-cov.fif"
+    "noise_cov", "{megbids_dir}/noise_cov/{subject}_ses-{ses}_task-{task}_lfreq-{lfreq}-hfreq-{hfreq}-cov.fif"
 )
 # source space
 fname.add(
-    'src', '{hmm_bids_dir}/forward/{subject}-{spacing}-src.fif'
+    'src', '{megbids_dir}/forward/{subject}-{spacing}-src.fif'
 )
 # BEm solution
 fname.add(
-    'bem', '{hmm_bids_dir}/forward/{subject}-{ntri}-bem-sol.fif'
+    'bem', '{megbids_dir}/forward/{subject}-{ntri}-bem-sol.fif'
 )
 #Forward model
 fname.add(
-    'fwd', '{hmm_bids_dir}/forward/{subject}_ses-{ses}_task-{task}_{spacing}-fwd.fif'
+    'fwd', '{megbids_dir}/forward/{subject}_ses-{ses}_task-{task}_{spacing}-fwd.fif'
 )
 # inverse solution
 fname.add(
-    'inv', '{hmm_bids_dir}/inverse/{subject}_ses-{ses}_task-{task}-{spacing}_lfreq-{lfreq}-hfreq-{hfreq}-inv.fif'
+    'inv', '{megbids_dir}/inverse/{subject}_ses-{ses}_task-{task}-{spacing}_lfreq-{lfreq}-hfreq-{hfreq}-inv.fif'
 )
 # Source estimate
 fname.add(
-    'stc', '{hmm_bids_dir}/stcs/{subject}_ses-{ses}_task-{task}_lfreq-{lfreq}-hfreq-{hfreq}-stc'
+    'stc', '{megbids_dir}/stcs/{subject}_ses-{ses}_task-{task}_lfreq-{lfreq}-hfreq-{hfreq}-stc'
 )
 # Save .mat file
 fname.add(
     "data_mat",
-    "{hmm_bids_dir}/data_mat/{subject}_lfreq-{l_freq}_hfreq-{h_freq}_task-{task}_mat.mat",
+    "{data_path}/{subject}/ses-{ses}/data_mat/{subject}_lfreq-{l_freq}_hfreq-{h_freq}_task-{task}_mat.mat",
 )
 
 
 # Source estimate characteristics
-fname.add(
-    'stc_char', '{hmm_bids_dir}/stcs_char/{subject}_ses-{ses}_task-{task}_char-{char}_stc'
-)
-
 # hmm-dual
 fname.add(
-    "hmm_dual", "{processed_dir}/{subject}/ses-{ses}/HMM_output/dual_hmm_{job_id}_task_{task}.mat"
+    "hmm_dual", "{hmm_dir}/dual_hmm_ses_{ses}_{job_id}_task_{task}.mat"
 )
 fname.add(
-    "FO_dual", "{processed_dir}/{subject}/ses-{ses}/HMM_output/FO_{job_id}_task_{task}.mat"
+    "FO_dual", "{hmm_dir}/FO_ses_{ses}_{job_id}_task_{task}.mat"
 )
 fname.add(
-    "SLT_dual", "{processed_dir}/{subject}/ses-{ses}/HMM_output/SLT_parameters_{job_id}_task_{task}.mat"
+    "SLT_dual", "{hmm_dir}/SLT_parameters_ses_{ses}_{job_id}_task_{task}.mat"
 )
 fname.add(
-    "TPM_dual", "{processed_dir}/{subject}/ses-{ses}/HMM_output/TPM_parameters_{job_id}_task_{task}.mat"
+    "TPM_dual", "{hmm_dir}/TPM_parameters_ses_{ses}_{job_id}_task_{task}.mat"
 )
-
 
 # Feature CSVs
 fname.add(
-    "feature_csv", "{processed_dir}/characteristics_csvs/{feature}_csv/feature-{feature}_task-{task}_jobid-{job_id}.csv"
+    "feature_csv", "{study_path}/characteristics_csvs/{feature}_csv/feature-{feature}_task-{task}_jobid-{job_id}.csv"
 )
 
-# statistical
-fname.add(
-    "coincidence_areas", "{processed_dir}/coincidences/coincidence_maps/statistical-map_state-{state}_side-effect-{side_effect}_limitperc-{perc}.stc"
-)
-fname.add(
-    "stat_clust", "{processed_dir}/spatial_clusters/clusters_state-{state}_task-{task}"
-)
-fname.add(
-    "coincidence", "{processed_dir}/coincidences/all_to_all_tp_similarity_task-{task}.pkl"
-)

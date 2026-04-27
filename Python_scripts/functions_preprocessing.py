@@ -52,16 +52,16 @@ def reject_bad_segments(raw):
         raw_mins.sort()
         raw_maxs.sort()
 
-        # Zip the lists to get tmins and maxs to crop function
+        # Zip the lists to get time minimums and maximums to crop function
         crop_sections = list(zip(raw_mins,raw_maxs))
         
         # Empty list for raw segments
-        raw_segs = []
+        raw_segments = []
 
         for crop in crop_sections:
-            raw_segs.append( raw.copy().crop(tmin=crop[0],tmax=crop[1]))
+            raw_segments.append( raw.copy().crop(tmin=crop[0],tmax=crop[1]))
         
-        raw_out = mne.concatenate_raws(raw_segs)
+        raw_out = mne.concatenate_raws(raw_segments)
         return raw_out
 
     else:
