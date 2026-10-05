@@ -124,6 +124,6 @@ fname.add(
 
 # Feature CSVs
 fname.add(
-    "feature_csv", "{study_path}/characteristics_csvs/{feature}_csv/feature-{feature}_task-{task}_jobid-{job_id}.csv"
+    "feature_csv", "{study_path}/post_HMM_derivatives/characteristics_csvs/{feature}_csv/feature-{feature}_task-{task}_jobid-{job_id}.csv"
 )
 

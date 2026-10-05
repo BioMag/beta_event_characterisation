@@ -8,12 +8,13 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 
+from mne.stats import permutation_cluster_1samp_test
 from settings_hmm_beta import (group_id, task, task_parameters)
 from config import (MRI_dir, fname, spacing)
 from scipy import stats as stats
 
 # Read the subjects
-df_subjects = pd.read_csv("subject_text_files/list_of_subjects.txt", names=["subject"])
+df_subjects = pd.read_csv("subject_text_files/list_of_subjects_task.txt", names=["subject"])
 
 # Set the colors
 myColors = sns.color_palette("rocket_r", 4).as_hex()
@@ -225,13 +226,41 @@ band_idxs = [0,2]
 
 for state_idx, band in enumerate(['high-band','low-band']):
 
-    curve_data = (induced_great_sum[band][:,parcel_index,:] - EA_rest_[band][:,parcel_index,:] ) / EA_rest_[band][:,parcel_index,:]
+    curve_data = induced_great_sum[band][:,parcel_index,:] / EA_rest_[band][:,parcel_index,:]
+    curve_data = curve_data - np.mean(curve_data[:,0:task_parameters[task]['n_of_bl_tp']], axis=1)[:,np.newaxis]
     curve = np.mean(curve_data, axis=0)
-    
-    # Shift the bl to zero
-    curve = curve - np.mean(curve[0:task_parameters[task]['n_of_bl_tp']])
-    
+
+    # Plot the mean curve
     axes.plot(t_ax,curve, color=myColors[band_idxs[state_idx]],linewidth=1, label = band)
+
+    # Make statistics
+    X = curve_data
+
+    p_threshold = 0.001
+    df = len(df_subjects) - 1  # degrees of freedom for the test
+    t_threshold = stats.distributions.t.ppf(1 - p_threshold / 2, df=df)
+
+    # Now let's actually do the clustering. This can take a long time...
+    print("Clustering.")
+    T_obs, clusters, cluster_p_values, H0 = clu = permutation_cluster_1samp_test(
+        X,
+        n_jobs=None,
+        threshold=t_threshold,
+        buffer_size=None,
+        verbose=True,
+        seed = 93,
+        n_permutations=5000
+    )
+
+    if len(cluster_p_values)>0:
+        for pi, p_val in enumerate(cluster_p_values):
+            if p_val <= 0.001:
+                cluster_positions = clusters[pi][0]
+                axes.plot([t_ax[cluster_positions[0]], t_ax[cluster_positions[-1]]],
+                        [-0.5-state_idx/10, -0.5-state_idx/10],
+                        color =  myColors[band_idxs[state_idx]],
+                        linewidth=2
+                        )
 
 axes.set_xlim(task_parameters[task]['epo_tmin'],task_parameters[task]['epo_tmax'])
 axes.set_xlabel('Time (s)')
