@@ -41,7 +41,7 @@ def beta_amplitude_envelope(data, sfreq, lower_freq, upper_freq):
 
     # calculate power
     power = mne.time_frequency.tfr_array_morlet(
-        array1, sfreq=sfreq, freqs=freqs, n_cycles=n_cycles, output="complex", n_jobs=16
+        array1, sfreq=sfreq, freqs=freqs, n_cycles=n_cycles, output="complex", n_jobs=-1
     )
 
     return power, freqs

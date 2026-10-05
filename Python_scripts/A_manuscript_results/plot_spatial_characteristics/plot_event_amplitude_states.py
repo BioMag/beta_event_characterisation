@@ -19,7 +19,7 @@ session = sessions[0]
 parcels = mne.read_labels_from_annot(subject = 'fsaverage', parc = 'aparc_sub', subjects_dir=MRI_dir)
 
 # Read the source space
-fname_src = fname.src(hmm_bids_dir=fname.hmm_bids_dir(subject='fsaverage', ses=session), subject='fsaverage', spacing=spacing)
+fname_src = fname.src(megbids_dir=fname.megbids_dir(subject='fsaverage', ses=session), subject='fsaverage', spacing=spacing)
 src = mne.read_source_spaces(fname_src)
 
 # Make columns to take from the df

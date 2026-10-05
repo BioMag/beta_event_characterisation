@@ -90,6 +90,9 @@ for j, session in enumerate(sessions):
                     dict_append_whole_ts = {'subject': subject,'session':session,'state_id':s_key[0],'measure':'whole_ts','perc':perc}
                     dict_append_whole_ts_low = {'subject': subject,'session':session,'state_id':s_key[0],'measure':'whole_ts_low','perc':perc}
                     dict_append_whole_ts_high = {'subject': subject,'session':session,'state_id':s_key[0],'measure':'whole_ts_high','perc':perc}
+                    dict_append_low_FO = {'subject': subject,'session':session,'state_id':s_key[0],'measure':'low_band_FO','perc':perc}
+                    dict_append_high_FO = {'subject': subject,'session':session,'state_id':s_key[0],'measure':'high_band_FO','perc':perc}
+
      
                     for sensor in range(0, n_labels):
                         # Make the sensor id and take the viterbi-path
@@ -98,8 +101,8 @@ for j, session in enumerate(sessions):
                         
                         # Take the amplitude envelope of the label
                         ae_sens = amp_env[sensor, :]
-                        ae_sens_low = amp_env[sensor, :]
-                        ae_sens_high = amp_env[sensor, :]
+                        ae_sens_low = amp_env_low[sensor, :]
+                        ae_sens_high = amp_env_high[sensor, :]
 
                         # If the data and amplitude envelope are not equal length,
                         # take corresponding part of the vmap
@@ -116,6 +119,15 @@ for j, session in enumerate(sessions):
 
                         mean_of_whole_ts_high = np.mean( ae_sens_high[ ae_sens_high >=  np.quantile(ae_sens_high, perc/100)] )
                         dict_append_whole_ts_high[sens_id] = mean_of_whole_ts_high
+
+                        # Calculate the "fractional occupancy" of the band-based events
+                        low_events_on = ae_sens_low >=  np.quantile(ae_sens_low, perc/100)
+                        FO_low = sum(low_events_on) / len(low_events_on)
+                        dict_append_low_FO[sens_id] = FO_low
+
+                        high_events_on = ae_sens_high >=  np.quantile(ae_sens_high, perc/100)
+                        FO_high = sum(high_events_on) / len(high_events_on)
+                        dict_append_high_FO[sens_id] = FO_high
                         
                         # Make "zeroed envelope", which means that all other values
                         # are zeros but the ones that are in the state
@@ -133,7 +145,7 @@ for j, session in enumerate(sessions):
 
                         # Calculate the quantiles
                         # The quantiles should be calculated to each event separately
-                        cut_values = [np.quantile(non_env, cut_percentage/100) for non_env in nonzero_envelope]
+                        cut_values = [np.quantile(non_env, perc/100) for non_env in nonzero_envelope]
                         
                         # Mean of the sections
                         mean_of_events = [
@@ -163,6 +175,8 @@ for j, session in enumerate(sessions):
                     save_dict.loc[len(save_dict)] = dict_append_whole_ts
                     save_dict.loc[len(save_dict)] = dict_append_whole_ts_low
                     save_dict.loc[len(save_dict)] = dict_append_whole_ts_high
+                    save_dict.loc[len(save_dict)] = dict_append_low_FO
+                    save_dict.loc[len(save_dict)] = dict_append_high_FO
 
 # Save the event amplitude csv
 save_dict.to_csv(fname.feature_csv(feature = 'EA',job_id=group_id, task=task))

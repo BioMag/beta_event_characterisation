@@ -7,7 +7,7 @@ Settings file
 Configuration parameters for beta event characterization.
 """
 # Task
-task = "leftCKCevoked" #leftCKCevoked or restEO
+task = "restEO" #leftCKCevoked or restEO
 
 # Session
 sessions = ["01", "02"]
